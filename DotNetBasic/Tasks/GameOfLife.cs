@@ -4,6 +4,7 @@ public class GameOfLife
 {
     private char[,] currentArrayMatrix;
     private char[,] previousArrayMatrix = null;
+    private char[,] tempArrayMatrix ;
     private int rows;
     private int columns;
     private int members = 0;
@@ -26,7 +27,7 @@ public class GameOfLife
         columns = Convert.ToInt32(Console.ReadLine());
 
         currentArrayMatrix = new char [rows, columns];
-
+        
         for (int i = 0; i < rows; i++)
         {
             for (int j = 0; j < columns; j++)
@@ -34,6 +35,7 @@ public class GameOfLife
                 currentArrayMatrix[i, j] = random.Next(0, 2) == 0 ? '+' : '-';
             }
         }
+        tempArrayMatrix  = (char[,])currentArrayMatrix.Clone();
     }
 
     public void CalculateAliveMembers()
@@ -48,8 +50,10 @@ public class GameOfLife
                     CheckRightMember(i, j);
                     CheckUpMember(i, j);
                     CheckDownMember(i, j);
-                    CheckDownDiagonalMembers(i, j);
-                    CheckUpDiagonalMembers(i, j);
+                    CheckUpRightDiagonalMembers(i,j);
+                    CheckDownRightDiagonalMembers(i,j);
+                    CheckUpLeftDiagonalMembers(i,j);
+                    CheckDownLeftDiagonalMembers(i,j);
 
                     if (currentArrayMatrix[i, j] == '+')
                     {
@@ -63,6 +67,7 @@ public class GameOfLife
                     members = 0;
                 }
             }
+            currentArrayMatrix = (char[,])tempArrayMatrix.Clone();
 
             Console.ReadKey();
             PrintMatrix(currentArrayMatrix);
@@ -120,33 +125,44 @@ public class GameOfLife
             }
         }
     }
+    
 
-    public void CheckUpDiagonalMembers(int rowPosition, int columnPosition)
+    public void CheckUpLeftDiagonalMembers(int rowPosition, int columnPosition)
+         {
+             if (rowPosition != 0 && columnPosition != 0)
+             {
+                 if (currentArrayMatrix[rowPosition -1, columnPosition - 1] == '+')
+                 {
+                     members++;
+                 }
+             }
+         }
+    public void CheckDownLeftDiagonalMembers(int rowPosition, int columnPosition)
     {
-        if (columnPosition != 0 && columnPosition != columns - 1 && rowPosition != 0)
-        {
-            if (currentArrayMatrix[rowPosition - 1, columnPosition - 1] == '+')
-            {
-                members++;
-            }
-
-            if (currentArrayMatrix[rowPosition - 1, columnPosition + 1] == '+')
-            {
-                members++;
-            }
-        }
-    }
-
-    public void CheckDownDiagonalMembers(int rowPosition, int columnPosition)
-    {
-        if (columnPosition != 0 && columnPosition != columns - 1 && rowPosition != rows - 1)
+        if (columnPosition != 0 && rowPosition != rows - 1)
         {
             if (currentArrayMatrix[rowPosition + 1, columnPosition - 1] == '+')
             {
                 members++;
             }
-
+        }
+    }
+    public void CheckDownRightDiagonalMembers(int rowPosition, int columnPosition)
+    {
+        if (columnPosition != columns - 1 && rowPosition != rows - 1)
+        {
             if (currentArrayMatrix[rowPosition + 1, columnPosition + 1] == '+')
+            {
+                members++;
+            }
+        }
+    }
+    
+    public void CheckUpRightDiagonalMembers(int rowPosition, int columnPosition)
+    {
+        if (columnPosition != columns - 1 && rowPosition != 0)
+        {
+            if (currentArrayMatrix[rowPosition - 1, columnPosition + 1] == '+')
             {
                 members++;
             }
@@ -157,12 +173,12 @@ public class GameOfLife
     {
         if (members <= 1)
         {
-            currentArrayMatrix[rowPosition, columnPosition] = '-';
+            tempArrayMatrix[rowPosition, columnPosition] = '-';
         }
 
         if (members >= 4)
         {
-            currentArrayMatrix[rowPosition, columnPosition] = '-';
+            tempArrayMatrix[rowPosition, columnPosition] = '-';
         }
     }
 
@@ -170,7 +186,7 @@ public class GameOfLife
     {
         if (members == 3)
         {
-            currentArrayMatrix[rowPosition, columnPosition] = '+';
+            tempArrayMatrix[rowPosition, columnPosition] = '+';
         }
     }
 
